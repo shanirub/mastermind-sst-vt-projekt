@@ -5,11 +5,22 @@ RESET_FG_COLOR = rs.fg  # represents resetting the foreground color
 
 class Board:
 
-    def __init__(self):
-        self.colors = generate_new_board()
+    def __init__(self, value_list=None):
+        """
+
+        :type value_list: list
+        """
+        # possible colors: light red, light green, light yellow, light blue
+        allowed_colors = [fg.li_red, fg.li_green, fg.li_yellow, fg.li_blue]
+
+        if value_list is None:
+            self.pegs = choices(allowed_colors, k=8)  # choose 8 colors, can repeat
+        else:
+            # todo check value_list validity
+            self.pegs = value_list
 
     def check_guess(self, guess):
-        if guess == self.colors:
+        if guess == self.pegs:
             # correct guess, game ended
             print("OLL KORRECT")
         else:
@@ -18,20 +29,20 @@ class Board:
             print("Full Correct: " + str(full_corrects))
             print("Half Correct: " + str(half_corrects))
 
-    def print_board(self):
+    def __repr__(self):
         board_str = ""
         for i in range(8):
-            board_str += (self.colors[i] + 'O ' + RESET_FG_COLOR)
+            board_str += (self.pegs[i] + 'O ' + RESET_FG_COLOR)
 
-        print(board_str)
+        return board_str
 
     def analyse_guess(self, guess):
         full_corrects = 0  # correct color + place
         half_corrects = 0  # correct color wrong place (after full corrects removed)
-        copy_board = self.colors
+        copy_board = self.pegs
 
         for i in range(8):
-            if guess[i] == self.colors[i]:     # correct color + place counted and then removed
+            if guess[i] == self.pegs[i]:     # correct color + place counted and then removed
                 full_corrects += 1
                 guess[i] = ''
                 copy_board[i] = ''
@@ -44,18 +55,10 @@ class Board:
         return full_corrects, half_corrects
 
 
-def generate_new_board():
-    # possible colors: light red, light green, light yellow, light blue
-    allowed_colors = [fg.li_red, fg.li_green, fg.li_yellow, fg.li_blue]
-    colors = choices(allowed_colors, k=8)       # choose 8 colors, can repeat
-
-    return colors
-
 
 b1 = Board()
 b2 = Board()
 
-b1.print_board()
-b2.print_board()
+print(b1, b2)
 
-b1.check_guess(b2.colors)
+b1.check_guess(b2.pegs)
