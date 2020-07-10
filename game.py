@@ -20,12 +20,12 @@ class Board:
             self.pegs = value_list
 
     def check_guess(self, guess):
-        if guess == self.pegs:
+        if guess.pegs == self.pegs:
             # correct guess, game ended
             print("OLL KORRECT")
         else:
             # incorrect guess, analyse guess
-            full_corrects, half_corrects = self.analyse_guess(guess)
+            full_corrects, half_corrects = self.analyse_guess(guess.pegs)
             print("Full Correct: " + str(full_corrects))
             print("Half Correct: " + str(half_corrects))
 
@@ -59,6 +59,7 @@ class Board:
 b1 = Board()
 b2 = Board()
 
-print(b1, b2)
+print(b1)
+print(b2)
 
-b1.check_guess(b2.pegs)
+b1.check_guess(b2)
