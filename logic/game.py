@@ -10,11 +10,11 @@ class Board:
 
         :type value_list: list
         """
-        # possible colors: light red, light green, light yellow, light blue
+        # possible colors: 1 : light red, 2 : light green, 3 : light yellow, 4 : light blue
         allowed_colors = [fg.li_red, fg.li_green, fg.li_yellow, fg.li_blue]
 
         if value_list is None:
-            self.pegs = choices(allowed_colors, k=8)  # choose 8 colors, can repeat
+            self.pegs = choices(allowed_colors, k=4)  # choose 8 colors, can repeat
         else:
             # todo check value_list validity
             self.pegs = value_list
@@ -31,7 +31,7 @@ class Board:
 
     def __repr__(self):
         board_str = ""
-        for i in range(8):
+        for i in range(4):
             board_str += (self.pegs[i] + 'O ' + RESET_FG_COLOR)
 
         return board_str
@@ -40,26 +40,46 @@ class Board:
         full_corrects = 0  # correct color + place
         half_corrects = 0  # correct color wrong place (after full corrects removed)
         copy_board = self.pegs
+        copy_guess = list(guess)
 
-        for i in range(8):
-            if guess[i] == self.pegs[i]:     # correct color + place counted and then removed
-                full_corrects += 1
-                guess[i] = ''
-                copy_board[i] = ''
-
-        for peg in guess:
-            if peg in copy_board:
+        for peg in copy_board:
+            if peg in copy_guess:
                 half_corrects += 1
-                copy_board.remove(peg)
+                copy_guess.remove(peg)
+
+        for i in range(4):
+            if list(guess)[i] == self.pegs[i]:  # correct color + place counted and then removed
+                full_corrects += 1
+                half_corrects -= 1
 
         return full_corrects, half_corrects
 
 
+class Player:
 
-b1 = Board()
-b2 = Board()
+    def __init__(self, name):
+        self.player_name = name
+        self.board = Board()
 
-print(b1)
-print(b2)
+    def __repr__(self):
+        player_str = " Player name: " + self.player_name + ", Board: " + self.board.__repr__()
+        return player_str
 
-b1.check_guess(b2)
+
+class Game:
+
+    def __init__(self, player):
+        self.num_of_players = 1
+        self.players = [player]
+
+    def join_game(self, player):
+        self.num_of_players += 1
+        self.players += player
+
+
+p1 = Player("Sha")
+p2 = Player("Ni")
+
+print(p1)
+print(p2)
+
