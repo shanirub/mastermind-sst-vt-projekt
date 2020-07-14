@@ -1,5 +1,6 @@
 from sty import fg, rs
-from random import choices
+from random import choices, randint
+
 RESET_FG_COLOR = rs.fg  # represents resetting the foreground color
 
 
@@ -68,18 +69,55 @@ class Player:
 
 class Game:
 
-    def __init__(self, player):
-        self.num_of_players = 1
-        self.players = [player]
+    def __init__(self):
+        self.players = []
+        self.next_turn = None
 
     def join_game(self, player):
-        self.num_of_players += 1
-        self.players += player
+        if len(self.players) < 2:
+            if player not in self.players:
+                self.players.append(player)
+                print("player added: ")
+                print(player)
+                print("Number of players: " + str(len(self.players)))
+            else:
+                print("this player is already in game")
+        else:
+            print("already have two players")
+
+    def start_game(self):
+        if len(self.players) < 2:
+            print("cannot start game until there are two players")
+        else:
+            self.next_turn = randint(0, 2)
+            print("first one to play is " + self.players[self.next_turn].player_name)
+
+    def __repr__(self):
+        game_str = ""
+        if self.players == 0:
+            game_str += "no players"
+        elif self.players == 1:
+            game_str += "one player. waiting for second player"
+        else:
+            game_str += "two players.\n"
+
+        for player in self.players:
+            game_str += player.__repr__()
+            game_str += "\n"
+
+        return game_str
 
 
 p1 = Player("Sha")
 p2 = Player("Ni")
+p3 = Player("Rub")
+g = Game()
+g.join_game(p1)
+g.join_game(p1)
+g.join_game(p2)
+g.join_game(p3)
+print(g)
+g.start_game()
 
-print(p1)
-print(p2)
+
 
