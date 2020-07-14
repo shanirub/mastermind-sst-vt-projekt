@@ -1,7 +1,10 @@
 from sty import fg, rs
 from random import choices, randint
+import time, zmq
 
 RESET_FG_COLOR = rs.fg  # represents resetting the foreground color
+# possible colors: 1 : light red, 2 : light green, 3 : light yellow, 4 : light blue
+ALLOWED_COLORS = [fg.li_red, fg.li_green, fg.li_yellow, fg.li_blue]
 
 
 class Board:
@@ -11,11 +14,8 @@ class Board:
 
         :type value_list: list
         """
-        # possible colors: 1 : light red, 2 : light green, 3 : light yellow, 4 : light blue
-        allowed_colors = [fg.li_red, fg.li_green, fg.li_yellow, fg.li_blue]
-
         if value_list is None:
-            self.pegs = choices(allowed_colors, k=4)  # choose 8 colors, can repeat
+            self.pegs = choices(ALLOWED_COLORS, k=4)  # choose 8 colors, can repeat
         else:
             # todo check value_list validity
             self.pegs = value_list
@@ -33,7 +33,7 @@ class Board:
     def __repr__(self):
         board_str = ""
         for i in range(4):
-            board_str += (self.pegs[i] + 'O ' + RESET_FG_COLOR)
+            board_str += (self.pegs[i] + str(ALLOWED_COLORS.index(self.pegs[i])) + RESET_FG_COLOR)
 
         return board_str
 
@@ -72,6 +72,11 @@ class Game:
     def __init__(self):
         self.players = []
         self.next_turn = None
+        #context = zmq.Context()
+        #socket = context.socket(zmq.REP)
+        #socket.bind("tcp://*:5555")
+        #print(" Game server started at tcp://localhost:5555 .")
+        #print(" To join a game, use: player.py")
 
     def join_game(self, player):
         if len(self.players) < 2:
@@ -89,7 +94,8 @@ class Game:
         if len(self.players) < 2:
             print("cannot start game until there are two players")
         else:
-            self.next_turn = randint(0, 2)
+            self.next_turn = randint(0, 1)
+            print(self.next_turn)
             print("first one to play is " + self.players[self.next_turn].player_name)
 
     def __repr__(self):
