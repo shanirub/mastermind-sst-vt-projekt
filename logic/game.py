@@ -1,6 +1,5 @@
 from sty import fg, rs
 from random import choices, randint
-import time, zmq
 
 RESET_FG_COLOR = rs.fg  # represents resetting the foreground color
 # possible colors: 1 : light red, 2 : light green, 3 : light yellow, 4 : light blue
@@ -8,15 +7,10 @@ ALLOWED_COLORS = [fg.li_red, fg.li_green, fg.li_yellow, fg.li_blue]
 
 
 class Board:
-
     def __init__(self, value_list=None):
-        """
-
-        :type value_list: list
-        """
         if value_list is None:
-            self.pegs = choices(ALLOWED_COLORS, k=4)  # choose 8 colors, can repeat
-        else:
+            self.pegs = choices(ALLOWED_COLORS, k=4)  # choose 4 colors, can repeat
+        else: # board can be initialised with a list of colors as a parameter. intented for testing
             # todo check value_list validity
             self.pegs = value_list
 
@@ -57,10 +51,10 @@ class Board:
 
 
 class Player:
-
     def __init__(self, name):
         self.player_name = name
         self.board = Board()
+        # todo save last guesses and results?
 
     def __repr__(self):
         player_str = " Player name: " + self.player_name + ", Board: " + self.board.__repr__()
@@ -68,15 +62,9 @@ class Player:
 
 
 class Game:
-
     def __init__(self):
         self.players = []
         self.next_turn = None
-        #context = zmq.Context()
-        #socket = context.socket(zmq.REP)
-        #socket.bind("tcp://*:5555")
-        #print(" Game server started at tcp://localhost:5555 .")
-        #print(" To join a game, use: player.py")
 
     def join_game(self, player):
         if len(self.players) < 2:
@@ -97,6 +85,12 @@ class Game:
             self.next_turn = randint(0, 1)
             print(self.next_turn)
             print("first one to play is " + self.players[self.next_turn].player_name)
+
+    def get_guess(self):
+        print("-- Player " + str(self.next_turn)) + ": Please enter your guess in four digits."
+        print("(1 : light red, 2 : light green, 3 : light yellow, 4 : light blue)")
+        guess = input("...")
+        return guess
 
     def __repr__(self):
         game_str = ""
