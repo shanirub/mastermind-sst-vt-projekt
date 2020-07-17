@@ -1,6 +1,7 @@
 from sty import fg, rs
 from random import choices, randint
 
+
 RESET_FG_COLOR = rs.fg  # represents resetting the foreground color
 # possible colors: 1 : light red, 2 : light green, 3 : light yellow, 4 : light blue
 ALLOWED_COLORS = [fg.li_red, fg.li_green, fg.li_yellow, fg.li_blue]
@@ -108,16 +109,14 @@ class Game:
         return game_str
 
 
-p1 = Player("Sha")
-p2 = Player("Ni")
-p3 = Player("Rub")
-g = Game()
-g.join_game(p1)
-g.join_game(p1)
-g.join_game(p2)
-g.join_game(p3)
-print(g)
-g.start_game()
-
-
-
+if __name__ == "__main__":
+    p1 = Player("Sha")
+    p2 = Player("Ni")
+    p3 = Player("Rub")
+    g = Game()
+    g.join_game(p1)
+    g.join_game(p1)
+    g.join_game(p2)
+    g.join_game(p3)
+    print(g)
+    g.start_game()
