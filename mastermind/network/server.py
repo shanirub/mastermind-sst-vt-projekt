@@ -41,11 +41,11 @@ if __name__ == "__main__":
 
     try:
         while True:
-            request = server.recv_pyobj()
+            request = server.recv_string()
             print("Received request: %s" % request)
             # reply = {'op': 'lala'}
             # print("Reply: %s" % reply)
-            server.send_pyobj(request)
+            server.send_string(request)
     finally:
         server.close()
         context.term()

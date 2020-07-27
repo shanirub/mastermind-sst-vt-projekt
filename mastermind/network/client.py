@@ -50,8 +50,8 @@ if __name__ == "__main__":
     client.connect(SERVER_ENDPOINT)
 
     # first request
-    request = generate_request(user)
-    client.send_pyobj(request)
+    request = "please_work"
+    client.send_string(request)
 
     try:
         retries_left = REQUEST_RETRIES
@@ -59,8 +59,12 @@ if __name__ == "__main__":
         print(client.poll(REQUEST_TIMEOUT))
         while True:
             if (client.poll(REQUEST_TIMEOUT) & zmq.POLLIN) != 0:
-                reply = client.recv_json()
-
+                reply = client.recv_string()
+                if reply is not None:
+                    logging.info("received reply")
+                    retries_left = REQUEST_RETRIES
+                else:
+                    logging.error("no reply received")
             retries_left -= 1
             logging.warning("No response from server")
             # Socket is confused. Close and remove it.
@@ -68,13 +72,12 @@ if __name__ == "__main__":
             client.close()
             if retries_left == 0:
                 logging.error("Server seems to be offline, abandoning")
-                raise zmq.ZMQError
 
             logging.info("Reconnecting to server…")
             client = context.socket(zmq.REQ)
             client.connect(SERVER_ENDPOINT)
             logging.info("Resending (%s)", request)
-            client.send_pyobj(request)
+            client.send_string(request)
 
     except zmq.ZMQError as ze:
         print("ZMQError: " + ze.strerror)
