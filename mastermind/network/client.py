@@ -3,47 +3,145 @@
 
 #   Connects REQ socket to tcp://localhost:5555
 #
+import logging
+import sys
 from time import sleep
 from mastermind.network.server import ClientRequest, ServerReply
 import zmq
 
-def check_state(state):
-    if state['op'] == ServerReply.STATE_WAITING_FOR_JOIN:
-        pass
-    elif state['op'] == ServerReply.STATE_WAINING_FOR_GUESS:
-        pass
-    elif state['op'] == ServerReply.GAME_FULL:
-        pass
-    elif state['op'] == ServerReply.GAME_OVER:
-        pass
-    elif state['op'] == ServerReply.NOT_YOUR_TURN:
-        pass
+def generate_request(user, op= 'FIRST_REQUEST'):
+    return {"op": op,
+            "user": user}
+
+
+def analyse_reply(state):
+    if state is None:
+        print("state is None")
     else:
-        return "invalid state - nothing done"
+        if state.get('op') == ServerReply.STATE_WAITING_FOR_JOIN:
+            print("state recieved: STATE_WAITING_FOR_JOIN")
+        elif state.get('op') == ServerReply.STATE_WAINING_FOR_GUESS:
+            print("state recieved: STATE_WAITING_FOR_GUESS")
+        elif state.get('op') == ServerReply.GAME_FULL:
+            print("state recieved: GAME_FULL")
+        elif state.get('op') == ServerReply.GAME_OVER:
+            print("state recieved: GAME_OVER")
+        elif state.get('op') == ServerReply.NOT_YOUR_TURN:
+            print("state recieved: NOT_YOUR_TURN")
+        else:
+            print("invalid state - nothing done")
 
-    reply = state # todo temp remove
-    return reply
 
+if __name__ == "__main__":
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
 
-context = zmq.Context()
+    user = input("enter username: ")
 
-#  Socket to talk to server
-print("Connecting to game server…")
-socket = context.socket(zmq.REQ)
-socket.connect("tcp://localhost:5557")
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+    REQUEST_TIMEOUT = 2500
+    REQUEST_RETRIES = 3
+    SERVER_ENDPOINT = "tcp://localhost:5557"
+    #
+    context = zmq.Context()
 
-request = {}
+    logging.info("Connecting to server…")
+    print("Connecting to game server…")
+    client = context.socket(zmq.REQ)
+    client.connect(SERVER_ENDPOINT)
 
-while True:
+    # first request
+    request = generate_request(user)
+    client.send_pyobj(request)
+
     try:
-        sleep(1)
-        request['op'] = ClientRequest.CHECK_STATE
-        state = socket.send_pyobj(request)
-        print(state)
-        # checking state to decide what to do
-        check_state(state)
+        retries_left = REQUEST_RETRIES
+        print(zmq.POLLIN)
+        print(client.poll(REQUEST_TIMEOUT))
+        while True:
+            if (client.poll(REQUEST_TIMEOUT) & zmq.POLLIN) != 0:
+                reply = client.recv_json()
+
+            retries_left -= 1
+            logging.warning("No response from server")
+            # Socket is confused. Close and remove it.
+            client.setsockopt(client.LINGER, 0)
+            client.close()
+            if retries_left == 0:
+                logging.error("Server seems to be offline, abandoning")
+                raise zmq.ZMQError
+
+            logging.info("Reconnecting to server…")
+            client = context.socket(zmq.REQ)
+            client.connect(SERVER_ENDPOINT)
+            logging.info("Resending (%s)", request)
+            client.send_pyobj(request)
+
+    except zmq.ZMQError as ze:
+        print("ZMQError: " + ze.strerror)
     finally:
-        socket.close()
+        client.close()
         context.term()
 
-# socket.send_string(name)
+    # socket.send_string(name)
+
+
+
+
+
+#
+#  Lazy Pirate client
+#  Use zmq_poll to do a safe request-reply
+#  To run, start lpserver and then randomly kill/restart it
+#
+#   Author: Daniel Lundin <dln(at)eintr(dot)org>
+# #
+# import itertools
+# import logging
+# import sys
+# import zmq
+#
+# logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+#
+# REQUEST_TIMEOUT = 2500
+# REQUEST_RETRIES = 3
+# SERVER_ENDPOINT = "tcp://localhost:5555"
+#
+# context = zmq.Context()
+#
+# logging.info("Connecting to server…")
+# client = context.socket(zmq.REQ)
+# client.connect(SERVER_ENDPOINT)
+#
+# for sequence in itertools.count():
+#     request = str(sequence).encode()
+#     logging.info("Sending (%s)", request)
+#     client.send(request)
+#
+#     retries_left = REQUEST_RETRIES
+#     while True:
+#         if (client.poll(REQUEST_TIMEOUT) & zmq.POLLIN) != 0:
+#             reply = client.recv()
+#             if int(reply) == sequence:
+#                 logging.info("Server replied OK (%s)", reply)
+#                 break
+#             else:
+#                 logging.error("Malformed reply from server: %s", reply)
+#                 continue
+#
+#         retries_left -= 1
+#         logging.warning("No response from server")
+#         # Socket is confused. Close and remove it.
+#         client.setsockopt(zmq.LINGER, 0)
+#         client.close()
+#         if retries_left == 0:
+#             logging.error("Server seems to be offline, abandoning")
+#             sys.exit()
+#
+#         logging.info("Reconnecting to server…")
+#         # Create new connection
+#         client = context.socket(zmq.REQ)
+#         client.connect(SERVER_ENDPOINT)
+#         logging.info("Resending (%s)", request)
+#         client.send(request)
+#
+#
