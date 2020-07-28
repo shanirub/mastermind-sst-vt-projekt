@@ -23,14 +23,14 @@ def generate_reply():
 
 def handle_request(request):
     if request.get('op') == ClientRequest.JOIN_GAME:
-        return "JOIN_GAME request"
+        return {"op": "JOIN_GAME request"}
         # return game_logic_server.add_player(request)
     elif request.get('op') == ClientRequest.SEND_GUESS:
-        return "SEND_GUESS request"
+        return {"op": "SEND_GUESS request"}
     elif request.get('op') == ClientRequest.CHECK_STATE:
-        return "CHECK_STATE request"
+        return {"op": "CHECK_STATE request"}
     else:
-        return {"invalid request": "nothing done"}
+        return {"op": "nothing done"}
 
 
 if __name__ == "__main__":
@@ -49,9 +49,9 @@ if __name__ == "__main__":
             logging.info("Received request from: " + request.get('user'))
             # reply = {'op': 'lala'}
             # print("Reply: %s" % reply)
-            reply = "pyobj sent"
-            server.send_string(reply)
-            logging.info("Reply send: %s" % reply)
+            reply = handle_request(request)
+            server.send_pyobj(reply)
+            logging.info("Reply send: %s" % reply.get('op'))
 
     finally:
         server.close()

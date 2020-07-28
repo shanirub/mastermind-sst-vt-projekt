@@ -61,7 +61,7 @@ if __name__ == "__main__":
         logging.info("client.poll(REQUEST_TIMEOUT) == " + str(client.poll(REQUEST_TIMEOUT)))
         while True:
             if (client.poll(REQUEST_TIMEOUT) & zmq.POLLIN) != 0:
-                reply = client.recv_string()
+                reply = client.recv_pyobj()
                 if reply is not None:
                     logging.info("received reply")
                     retries_left = REQUEST_RETRIES
@@ -82,7 +82,7 @@ if __name__ == "__main__":
             client.send_pyobj(request)
 
     except zmq.ZMQError as ze:
-        print("ZMQError: " + ze.strerror)
+        logging.error("ZMQError: " + ze.strerror)
     finally:
         client.close()
         context.term()
