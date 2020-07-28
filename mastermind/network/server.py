@@ -1,3 +1,5 @@
+import logging
+
 import zmq
 from mastermind.logic import game_logic_server
 from enum import Enum
@@ -32,20 +34,25 @@ def handle_request(request):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+
     context = zmq.Context()
-    print("Context defined.")
+    logging.info("Context created")
     server = context.socket(zmq.REP)
-    print("Socket defined")
+    logging.info("Socket created")
+    logging.info("Binding to tcp://*:5557 ...")
     server.bind("tcp://*:5557")
-    print("Socket bind tcp://*:5557")
 
     try:
         while True:
-            request = server.recv_string()
-            print("Received request: %s" % request)
+            request = server.recv_pyobj()
+            logging.info("Received request from: " + request.get('user'))
             # reply = {'op': 'lala'}
             # print("Reply: %s" % reply)
-            server.send_string(request)
+            reply = "pyobj sent"
+            server.send_string(reply)
+            logging.info("Reply send: %s" % reply)
+
     finally:
         server.close()
         context.term()

@@ -50,13 +50,15 @@ if __name__ == "__main__":
     client.connect(SERVER_ENDPOINT)
 
     # first request
-    request = "please_work"
-    client.send_string(request)
+    logging.info("Generating request...")
+    request = generate_request(user)
+    logging.info("Request generated")
+    client.send_pyobj(request)
 
     try:
         retries_left = REQUEST_RETRIES
-        print(zmq.POLLIN)
-        print(client.poll(REQUEST_TIMEOUT))
+        logging.info("zmq.POLLIN == " + str(zmq.POLLIN))
+        logging.info("client.poll(REQUEST_TIMEOUT) == " + str(client.poll(REQUEST_TIMEOUT)))
         while True:
             if (client.poll(REQUEST_TIMEOUT) & zmq.POLLIN) != 0:
                 reply = client.recv_string()
@@ -77,7 +79,7 @@ if __name__ == "__main__":
             client = context.socket(zmq.REQ)
             client.connect(SERVER_ENDPOINT)
             logging.info("Resending (%s)", request)
-            client.send_string(request)
+            client.send_pyobj(request)
 
     except zmq.ZMQError as ze:
         print("ZMQError: " + ze.strerror)
