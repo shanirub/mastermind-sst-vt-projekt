@@ -9,7 +9,8 @@ from time import sleep
 from mastermind.network.server import ClientRequest, ServerReply
 import zmq
 
-def generate_request(user, op= 'FIRST_REQUEST'):
+
+def generate_request(user, op=ClientRequest.CHECK_STATE):
     return {"op": op,
             "user": user}
 
@@ -33,20 +34,19 @@ def analyse_reply(state):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
-
     user = input("enter username: ")
 
     logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
     REQUEST_TIMEOUT = 2500
     REQUEST_RETRIES = 3
     SERVER_ENDPOINT = "tcp://localhost:5557"
-    #
-    context = zmq.Context()
 
-    logging.info("Connecting to server…")
-    print("Connecting to game server…")
+    context = zmq.Context()
+    logging.info("Context created")
+
     client = context.socket(zmq.REQ)
+    logging.info("Socket created")
+    logging.info("Connecting to server...")
     client.connect(SERVER_ENDPOINT)
 
     # first request
@@ -65,11 +65,11 @@ if __name__ == "__main__":
                     retries_left = REQUEST_RETRIES
                 else:
                     logging.error("no reply received")
-            retries_left -= 1
-            logging.warning("No response from server")
-            # Socket is confused. Close and remove it.
-            client.setsockopt(client.LINGER, 0)
-            client.close()
+                    retries_left -= 1
+                    logging.warning("No response from server")
+                    # Socket is confused. Close and remove it.
+                    client.setsockopt(client.LINGER, 0)
+                    client.close()
             if retries_left == 0:
                 logging.error("Server seems to be offline, abandoning")
 
@@ -86,10 +86,6 @@ if __name__ == "__main__":
         context.term()
 
     # socket.send_string(name)
-
-
-
-
 
 #
 #  Lazy Pirate client
