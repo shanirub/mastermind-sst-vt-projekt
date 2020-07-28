@@ -1,5 +1,4 @@
 import logging
-
 import zmq
 from mastermind.logic import game_logic_server
 from enum import Enum
@@ -18,16 +17,18 @@ class ServerReply(Enum):
     GAME_OVER = 4
     NOT_YOUR_TURN = 5
 
+
 def generate_reply():
     pass
 
 def handle_request(request):
-    if request.get('op') == ClientRequest.JOIN_GAME:
+    # todo op code is not copied from request to reply
+    if request.get('op').name == ClientRequest.JOIN_GAME.name:
         return {"op": "JOIN_GAME request"}
         # return game_logic_server.add_player(request)
-    elif request.get('op') == ClientRequest.SEND_GUESS:
+    elif request.get('op').name is ClientRequest.SEND_GUESS.name:
         return {"op": "SEND_GUESS request"}
-    elif request.get('op') == ClientRequest.CHECK_STATE:
+    elif request.get('op').name is ClientRequest.CHECK_STATE.name:
         return {"op": "CHECK_STATE request"}
     else:
         return {"op": "nothing done"}
@@ -47,11 +48,12 @@ if __name__ == "__main__":
         while True:
             request = server.recv_pyobj()
             logging.info("Received request from: " + request.get('user'))
-            # reply = {'op': 'lala'}
+            logging.info("Request op code: " + str(request.get('op')))
             # print("Reply: %s" % reply)
             reply = handle_request(request)
+            logging.info("Reply generated, op code: " + str(reply.get('op')))
             server.send_pyobj(reply)
-            logging.info("Reply send: %s" % reply.get('op'))
+            logging.info("Reply send: %s" % str(reply.get('op')))
 
     finally:
         server.close()
