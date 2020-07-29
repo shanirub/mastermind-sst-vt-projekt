@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # first request
     logging.info("Generating request...")
-    request = generate_request(user)
+    request = generate_request(user, op=ClientRequest.JOIN_GAME)
     logging.info("Request generated")
     client.send_pyobj(request)
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
             if (client.poll(REQUEST_TIMEOUT) & zmq.POLLIN) != 0:
                 reply = client.recv_pyobj()
                 if reply is not None:
-                    logging.info("received reply")
+                    logging.info("received reply" + reply.get('op'))
                     retries_left = REQUEST_RETRIES
                 else:
                     logging.error("no reply received")
