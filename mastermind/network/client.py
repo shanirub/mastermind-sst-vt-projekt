@@ -6,7 +6,7 @@
 import logging
 import sys
 from time import sleep
-from mastermind.network.server import ClientRequest, ServerReply
+from mastermind.logic.game_logic_server import ClientRequest, ServerReply
 import zmq
 
 
@@ -17,20 +17,30 @@ def generate_request(user, op=ClientRequest.CHECK_STATE):
 
 def analyse_reply(state):
     if state is None:
-        print("state is None")
+        logging.error("Empty state")
     else:
         if state.get('op') == ServerReply.STATE_WAITING_FOR_JOIN:
-            print("state recieved: STATE_WAITING_FOR_JOIN")
+            logging.info("Server is waiting a join request")
         elif state.get('op') == ServerReply.STATE_WAINING_FOR_GUESS:
-            print("state recieved: STATE_WAITING_FOR_GUESS")
+            logging.info("Server is waiting a guess")
         elif state.get('op') == ServerReply.GAME_FULL:
-            print("state recieved: GAME_FULL")
+            logging.error("Game is full. Player not added")
         elif state.get('op') == ServerReply.GAME_OVER:
-            print("state recieved: GAME_OVER")
+            logging.warning("Game over")    # todo win and lost
         elif state.get('op') == ServerReply.NOT_YOUR_TURN:
-            print("state recieved: NOT_YOUR_TURN")
+            logging.warning("Server says it's not your turn")
+        elif state.get('op') == ServerReply.PLAYER_ADDED:
+            logging.info("Player was added successfully")
+        elif state.get('op') == ServerReply.PLAYER_ALREADY_EXISTS:
+            logging.info("Player already in game. Try a different name")
+        elif state.get('op') == ServerReply.WAITING_FOR_SECOND_PLAYER:
+            logging.info("Waiting for a second player to join the game")
+        elif state.get('op') == ServerReply.GAME_STARTED_YOUR_TURN:
+            logging.info("Game started: your turn")
+        elif state.get('op') == ServerReply.GAME_STARTED_WAIT_FOR_TURN:
+            logging.info("Game started: wait for your turn")
         else:
-            print("invalid state - nothing done")
+            logging.info("Invalid state")
 
 
 if __name__ == "__main__":

@@ -6,7 +6,25 @@ import logging
 from sty import fg, rs
 from random import choices, randint
 from enum import Enum
-from mastermind.network.server import ServerReply
+
+
+class ClientRequest(Enum):
+    JOIN_GAME = 1
+    SEND_GUESS = 2
+    CHECK_STATE = 3
+
+
+class ServerReply(Enum):
+    STATE_WAITING_FOR_JOIN = 1
+    STATE_WAINING_FOR_GUESS = 2
+    GAME_FULL = 3                   #
+    GAME_OVER = 4
+    NOT_YOUR_TURN = 5
+    PLAYER_ADDED = 6
+    PLAYER_ALREADY_EXISTS = 7       #
+    WAITING_FOR_SECOND_PLAYER = 8   #
+    GAME_STARTED_YOUR_TURN = 9
+    GAME_STARTED_WAIT_FOR_TURN = 10
 
 
 class GameColors(Enum):
@@ -19,7 +37,7 @@ class Player:
     def __init__(self, name):
         self.player_name = name
         self.num_of_guesses = 0
-        self.board = choices(GameColors.ALLOWED_COLORS, k=4)  # choose 4 colors, can repeat
+        self.board = choices(GameColors.ALLOWED_COLORS.value, k=4)  # choose 4 colors, can repeat
         # todo save last guesses and results?
 
     def __repr__(self):     # todo board representation with color

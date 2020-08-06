@@ -3,26 +3,7 @@ import zmq
 from mastermind.logic import game_logic_server
 from enum import Enum
 
-from mastermind.logic.game_logic_server import Game
-
-
-class ClientRequest(Enum):
-    JOIN_GAME = 1
-    SEND_GUESS = 2
-    CHECK_STATE = 3
-
-
-class ServerReply(Enum):
-    STATE_WAITING_FOR_JOIN = 1
-    STATE_WAINING_FOR_GUESS = 2
-    GAME_FULL = 3                   #
-    GAME_OVER = 4
-    NOT_YOUR_TURN = 5
-    PLAYER_ADDED = 6
-    PLAYER_ALREADY_EXISTS = 7       #
-    WAITING_FOR_SECOND_PLAYER = 8   #
-    GAME_STARTED_YOUR_TURN = 9
-    GAME_STARTED_WAIT_FOR_TURN = 10
+from mastermind.logic.game_logic_server import Game, ServerReply, ClientRequest
 
 
 def generate_reply():
@@ -32,7 +13,8 @@ def generate_reply():
 def handle_request(request):
     # todo op code is not copied from request to reply <<- i think it's done?
     if request.get('op').name == ClientRequest.JOIN_GAME.name:
-        return {'op': game.add_player(request.get['name'])}
+        op = game.add_player(request.get['name'])
+        return {'op': op.name}
     elif request.get('op').name == ClientRequest.SEND_GUESS.name:
         return {"op": "SEND_GUESS request"}     # todo
     elif request.get('op').name == ClientRequest.CHECK_STATE.name:
