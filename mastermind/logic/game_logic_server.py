@@ -1,4 +1,3 @@
-# todo add_plyer
 # todo analyse_guess
 # todo inform_state
 
@@ -23,8 +22,8 @@ class ServerReply(Enum):
     PLAYER_ADDED = 6
     PLAYER_ALREADY_EXISTS = 7       #
     WAITING_FOR_SECOND_PLAYER = 8   #
-    GAME_STARTED_YOUR_TURN = 9
-    GAME_STARTED_WAIT_FOR_TURN = 10
+    GAME_STARTED_YOUR_TURN = 9      #
+    GAME_STARTED_WAIT_FOR_TURN = 10 #
 
 
 class GameColors(Enum):
@@ -67,7 +66,7 @@ class Game:
         if len(self.players) == 0:
             player = Player(player_name)
             self.players.append(player)
-            logging.info("Created and added player: " + player_name)
+            logging.info("Created and added player: " + str(player_name))
             return ServerReply.WAITING_FOR_SECOND_PLAYER
 
         if len(self.players) == 1:
@@ -87,15 +86,13 @@ class Game:
                 else:
                     return ServerReply.GAME_STARTED_WAIT_FOR_TURN
 
+    def analyse_guess(request):
+        reply = request  # todo remove
+        return reply
 
-def analyse_guess(request):
-    reply = request  # todo remove
-    return reply
-
-
-def inform_state(request):
-    reply = request  # todo remove
-    return reply
+    def inform_state(request):
+        reply = request  # todo remove
+        return reply
 
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)

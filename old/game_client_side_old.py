@@ -1,5 +1,4 @@
 from sty import fg, rs
-from random import choices, randint
 from enum import Enum
 
 

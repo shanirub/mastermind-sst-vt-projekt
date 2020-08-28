@@ -11,9 +11,8 @@ def generate_reply():
 
 
 def handle_request(request):
-    # todo op code is not copied from request to reply <<- i think it's done?
     if request.get('op').name == ClientRequest.JOIN_GAME.name:
-        op = game.add_player(request.get['name'])
+        op = game.add_player(request.get('user'))
         return {'op': op.name}
     elif request.get('op').name == ClientRequest.SEND_GUESS.name:
         return {"op": "SEND_GUESS request"}     # todo
