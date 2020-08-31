@@ -1,9 +1,8 @@
 import logging
-import zmq
-from mastermind.logic import game_logic_server
-from enum import Enum
 
-from mastermind.logic.game_logic_server import Game, ServerReply, ClientRequest
+import zmq
+
+from mastermind.logic.game_logic_server import Game, ClientRequest
 
 
 def generate_reply():
@@ -27,6 +26,7 @@ if __name__ == "__main__":
 
     game = Game()
     logging.info("created a new Game instance")
+    logging.info("number of players: " + str(len(game.players)))
 
     context = zmq.Context()
     logging.info("Context created")

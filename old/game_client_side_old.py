@@ -1,5 +1,6 @@
-from sty import fg, rs
 from enum import Enum
+
+from sty import fg, rs
 
 
 class GameColors(Enum):

@@ -1,4 +1,3 @@
-import pytest
 from mastermind.logic.game_logic_server import Game, ServerReply
 
 

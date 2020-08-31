@@ -4,8 +4,10 @@
 #   Connects REQ socket to tcp://localhost:5555
 #
 import logging
-from mastermind.logic.game_logic_server import ClientRequest, ServerReply
+import sys
 import zmq
+
+from mastermind.logic.game_logic_server import ClientRequest, ServerReply
 
 
 def generate_request(user, op=ClientRequest.CHECK_STATE):
@@ -14,28 +16,41 @@ def generate_request(user, op=ClientRequest.CHECK_STATE):
 
 
 def analyse_reply(state):
+    global request
     if state is None:
         logging.error("Empty state")
     else:
-        if state.get('op') == ServerReply.STATE_WAITING_FOR_JOIN:
+        if state.get('op') == ServerReply.STATE_WAITING_FOR_JOIN.name:
             logging.info("Server is waiting a join request")
-        elif state.get('op') == ServerReply.STATE_WAINING_FOR_GUESS:
+        elif state.get('op') == ServerReply.STATE_WAINING_FOR_GUESS.name:
             logging.info("Server is waiting a guess")
-        elif state.get('op') == ServerReply.GAME_FULL:
+        elif state.get('op') == ServerReply.GAME_FULL.name:
             logging.error("Game is full. Player not added")
-        elif state.get('op') == ServerReply.GAME_OVER:
+            client.close()
+            context.term()
+            sys.exit()
+        elif state.get('op') == ServerReply.GAME_OVER.name:
             logging.warning("Game over")    # todo win and lost
-        elif state.get('op') == ServerReply.NOT_YOUR_TURN:
+            client.close()
+            context.term()
+            sys.exit()
+        elif state.get('op') == ServerReply.NOT_YOUR_TURN.name:
             logging.warning("Server says it's not your turn")
-        elif state.get('op') == ServerReply.PLAYER_ADDED:
+        elif state.get('op') == ServerReply.PLAYER_ADDED.name:  # not used?
             logging.info("Player was added successfully")
-        elif state.get('op') == ServerReply.PLAYER_ALREADY_EXISTS:
+            request = generate_request(user)
+        elif state.get('op') == ServerReply.PLAYER_ALREADY_EXISTS.name:
             logging.info("Player already in game. Try a different name")
-        elif state.get('op') == ServerReply.WAITING_FOR_SECOND_PLAYER:
+            client.close()
+            context.term()
+            sys.exit()
+        elif state.get('op') == ServerReply.WAITING_FOR_SECOND_PLAYER.name:
             logging.info("Waiting for a second player to join the game")
-        elif state.get('op') == ServerReply.GAME_STARTED_YOUR_TURN:
+            request = generate_request(user)
+        elif state.get('op') == ServerReply.GAME_STARTED_YOUR_TURN.name:
             logging.info("Game started: your turn")
-        elif state.get('op') == ServerReply.GAME_STARTED_WAIT_FOR_TURN:
+            # get new guess
+        elif state.get('op') == ServerReply.GAME_STARTED_WAIT_FOR_TURN.name:
             logging.info("Game started: wait for your turn")
         else:
             logging.info("Invalid state")
@@ -76,7 +91,7 @@ if __name__ == "__main__":
                 if reply is not None:
                     logging.info("received reply" + reply.get('op'))
                     retries_left = REQUEST_RETRIES
-                    request = generate_request(user)
+                    analyse_reply(reply)
                     # todo analyse reply + create new request
                 else:
                     logging.error("no reply received")

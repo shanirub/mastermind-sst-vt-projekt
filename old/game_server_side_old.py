@@ -1,6 +1,7 @@
-from sty import fg, rs
-from random import choices, randint
 from enum import Enum
+from random import choices, randint
+
+from sty import fg, rs
 
 
 class GameColors(Enum):

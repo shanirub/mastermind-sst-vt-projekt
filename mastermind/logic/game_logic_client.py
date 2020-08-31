@@ -2,7 +2,6 @@
 # todo ask_to_join
 
 import logging
-from mastermind.logic.game_logic_server import ClientRequest, ServerReply, GameColors
 
 
 def ask_to_join():

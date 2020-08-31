@@ -2,9 +2,10 @@
 # todo inform_state
 
 import logging
-from sty import fg, rs
-from random import choices, randint
 from enum import Enum
+from random import choices, randint
+
+from sty import fg, rs
 
 
 class ClientRequest(Enum):
@@ -37,6 +38,7 @@ class Player:
         self.player_name = name
         self.num_of_guesses = 0
         self.board = choices(GameColors.ALLOWED_COLORS.value, k=4)  # choose 4 colors, can repeat
+        # todo save last state?
         # todo save last guesses and results?
 
     def __repr__(self):     # todo board representation with color
