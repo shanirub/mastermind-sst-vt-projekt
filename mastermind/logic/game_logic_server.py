@@ -93,7 +93,7 @@ class Game:
         return reply
 
     def check_state(self, player_name):
-
+        # local var. to make the ifs clearer
         num_of_players = len(self.players)
         players_names = [x.player_name for x in self.players]
         has_player_joined = player_name in players_names
