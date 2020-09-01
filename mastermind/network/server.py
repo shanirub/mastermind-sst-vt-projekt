@@ -16,7 +16,8 @@ def handle_request(request):
     elif request.get('op').name == ClientRequest.SEND_GUESS.name:
         return {"op": "SEND_GUESS request"}     # todo
     elif request.get('op').name == ClientRequest.CHECK_STATE.name:
-        return {"op": "CHECK_STATE request"}        # todo
+        op = game.check_state(request.get('user'))
+        return {'op': op}
     else:
         return {"op": "nothing done"}           # todo
 

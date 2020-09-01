@@ -88,13 +88,27 @@ class Game:
                 else:
                     return ServerReply.GAME_STARTED_WAIT_FOR_TURN
 
-    def analyse_guess(request):
+    def analyse_guess(self, request):
         reply = request  # todo remove
         return reply
 
-    def inform_state(request):
+    def inform_state(self, request):
         reply = request  # todo remove
         return reply
+
+    def check_state(self, player_name):
+        if player_name in self.players:
+            if len(self.players) == 1:
+                return ServerReply.WAITING_FOR_SECOND_PLAYER
+            elif len(self.players) == 2:
+                if self.players.index(player_name) == self.next_turn:
+                    return ServerReply.GAME_STARTED_YOUR_TURN
+                else:
+                    return ServerReply.GAME_STARTED_WAIT_FOR_TURN
+
+
+
+
 
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
