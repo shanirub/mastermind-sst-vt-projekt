@@ -17,5 +17,17 @@ def test_analyse_guess():
     assert False
 
 
-def test_inform_state():
-    assert False
+def test_check_state():
+    game = Game()
+
+    assert game.check_state("Sha") == ServerReply.STATE_WAITING_FOR_JOIN
+    game.add_player("Sha")
+    assert game.check_state("Sha") == ServerReply.WAITING_FOR_SECOND_PLAYER
+    assert game.check_state("Ni") == ServerReply.STATE_WAITING_FOR_JOIN
+    game.add_player("Ni")
+
+    game.next_turn = 1
+    assert game.check_state("Sha") == ServerReply.NOT_YOUR_TURN
+    assert game.check_state("Ni") == ServerReply.STATE_WAINING_FOR_GUESS
+    assert game.check_state("Ru") == ServerReply.GAME_FULL
+

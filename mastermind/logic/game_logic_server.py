@@ -15,16 +15,16 @@ class ClientRequest(Enum):
 
 
 class ServerReply(Enum):
-    STATE_WAITING_FOR_JOIN = 1
-    STATE_WAINING_FOR_GUESS = 2
-    GAME_FULL = 3                   #
+    STATE_WAITING_FOR_JOIN = 1  #
+    STATE_WAINING_FOR_GUESS = 2  #
+    GAME_FULL = 3  #
     GAME_OVER = 4
-    NOT_YOUR_TURN = 5
+    NOT_YOUR_TURN = 5   #
     PLAYER_ADDED = 6
-    PLAYER_ALREADY_EXISTS = 7       #
-    WAITING_FOR_SECOND_PLAYER = 8   #
-    GAME_STARTED_YOUR_TURN = 9      #
-    GAME_STARTED_WAIT_FOR_TURN = 10 #
+    PLAYER_ALREADY_EXISTS = 7  #
+    WAITING_FOR_SECOND_PLAYER = 8  #
+    GAME_STARTED_YOUR_TURN = 9  #
+    GAME_STARTED_WAIT_FOR_TURN = 10  #
 
 
 class GameColors(Enum):
@@ -41,7 +41,7 @@ class Player:
         # todo save last state?
         # todo save last guesses and results?
 
-    def __repr__(self):     # todo board representation with color
+    def __repr__(self):  # todo board representation with color
         player_str = " Player name: " + self.player_name + ", Board: " + self.board.__repr__()
         return player_str
 
@@ -92,23 +92,27 @@ class Game:
         reply = request  # todo remove
         return reply
 
-    def inform_state(self, request):
-        reply = request  # todo remove
-        return reply
-
     def check_state(self, player_name):
-        if player_name in self.players:
-            if len(self.players) == 1:
+
+        num_of_players = len(self.players)
+        players_names = [x.player_name for x in self.players]
+        has_player_joined = player_name in players_names
+
+        if num_of_players == 0:
+            return ServerReply.STATE_WAITING_FOR_JOIN
+        elif num_of_players == 1:
+            if has_player_joined:
                 return ServerReply.WAITING_FOR_SECOND_PLAYER
-            elif len(self.players) == 2:
-                if self.players.index(player_name) == self.next_turn:
-                    return ServerReply.GAME_STARTED_YOUR_TURN
+            else:
+                return ServerReply.STATE_WAITING_FOR_JOIN
+        elif num_of_players == 2:
+            if has_player_joined:
+                if self.next_turn == players_names.index(player_name):
+                    return ServerReply.STATE_WAINING_FOR_GUESS
                 else:
-                    return ServerReply.GAME_STARTED_WAIT_FOR_TURN
-
-
-
-
+                    return ServerReply.NOT_YOUR_TURN
+            else:
+                return ServerReply.GAME_FULL
 
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
