@@ -56,7 +56,7 @@ if __name__ == "__main__":
                     retries_left = REQUEST_RETRIES
 
                     # checking to see if need to exit
-                    if should_exit(reply):
+                    if should_exit(reply):  # 3
                         clean_exit()
 
                     # generating a new request

@@ -16,7 +16,7 @@ class ClientRequest(Enum):
 
 class ServerReply(Enum):
     STATE_WAITING_FOR_JOIN = 1  #
-    STATE_WAINING_FOR_GUESS = 2  #
+    STATE_WAITING_FOR_GUESS = 2  #
     GAME_FULL = 3  #
     GAME_OVER = 4
     NOT_YOUR_TURN = 5   #
@@ -108,7 +108,7 @@ class Game:
         elif num_of_players == 2:
             if has_player_joined:
                 if self.next_turn == players_names.index(player_name):
-                    return ServerReply.STATE_WAINING_FOR_GUESS
+                    return ServerReply.STATE_WAITING_FOR_GUESS
                 else:
                     return ServerReply.NOT_YOUR_TURN
             else:

@@ -19,11 +19,12 @@ def should_exit(reply):
     return False
 
 
-def get_op_new_request(self, reply):
-    if reply.get('op') == ServerReply.NOT_YOUR_TURN.name or reply.get('op') == ServerReply.GAME_STARTED_WAIT_FOR_TURN:
+def get_op_new_request(reply):
+    if reply.get('op') is ServerReply.NOT_YOUR_TURN or reply.get('op') is ServerReply.GAME_STARTED_WAIT_FOR_TURN \
+            or reply.get('op') is ServerReply.WAITING_FOR_SECOND_PLAYER:
         logging.warning("not your turn")
         return ClientRequest.CHECK_STATE
-    elif reply.get('op') == ServerReply.STATE_WAINING_FOR_GUESS or reply.get('op') == ServerReply.GAME_STARTED_YOUR_TURN:
+    elif reply.get('op') is ServerReply.STATE_WAITING_FOR_GUESS or reply.get('op') is ServerReply.GAME_STARTED_YOUR_TURN:
         logging.info("your turn to guess")
         return ClientRequest.SEND_GUESS
 
