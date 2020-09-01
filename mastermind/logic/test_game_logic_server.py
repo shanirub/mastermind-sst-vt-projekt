@@ -28,6 +28,6 @@ def test_check_state():
 
     game.next_turn = 1
     assert game.check_state("Sha") == ServerReply.NOT_YOUR_TURN
-    assert game.check_state("Ni") == ServerReply.STATE_WAINING_FOR_GUESS
+    assert game.check_state("Ni") == ServerReply.STATE_WAITING_FOR_GUESS
     assert game.check_state("Ru") == ServerReply.GAME_FULL
 
