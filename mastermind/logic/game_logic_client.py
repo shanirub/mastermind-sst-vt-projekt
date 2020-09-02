@@ -9,9 +9,6 @@ def should_exit(reply):
     if reply.get('op').name == ServerReply.GAME_FULL.name:
         logging.error("game full. exiting")
         return True
-    elif reply.get('op').name == ServerReply.GAME_OVER.name:
-        logging.error("game over")  # todo differentiate win - lose
-        return True
     elif reply.get('op').name == ServerReply.PLAYER_ALREADY_EXISTS.name:
         logging.error("player already exists. exiting")
         return True
@@ -36,6 +33,7 @@ def get_op_new_request(reply):
     elif reply.get('op') is ServerReply.YOU_WON:
         # game won
         return ClientRequest.WON_GAME
+    return ClientRequest.CHECK_STATE # todo not very nice, should be in if? fallback
 
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)

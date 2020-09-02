@@ -5,43 +5,33 @@ import logging
 from enum import Enum
 from random import choices, randint, randrange
 
-from sty import fg, rs
-
 
 class ClientRequest(Enum):
-    JOIN_GAME = 1
-    SEND_GUESS = 2
-    CHECK_STATE = 3
-    WON_GAME = 4
-    LOST_GAME = 5
+    JOIN_GAME = 1   # generates a request
+    SEND_GUESS = 2  # generates a request
+    CHECK_STATE = 3 # generates a request
+    WON_GAME = 4    # generates no request
+    LOST_GAME = 5   # generates no request
 
 
 class ServerReply(Enum):
-    STATE_WAITING_FOR_JOIN = 1  #
-    STATE_WAITING_FOR_GUESS = 2  #
-    GAME_FULL = 3  #
-    GAME_OVER = 4
-    NOT_YOUR_TURN = 5   #
-    PLAYER_ADDED = 6
-    PLAYER_ALREADY_EXISTS = 7  #
-    WAITING_FOR_SECOND_PLAYER = 8  #
-    GAME_STARTED_YOUR_TURN = 9  #
-    GAME_STARTED_WAIT_FOR_TURN = 10  #
-    GUESS_RESULT = 11 #
-    YOU_WON = 12 #
-
-
-class GameColors(Enum):
-    RESET_FG_COLOR = rs.fg  # represents resetting the foreground color
-    ALLOWED_COLORS = [fg.li_red, fg.li_green, fg.li_yellow, fg.li_blue]
-    # possible colors: 1 : light red, 2 : light green, 3 : light yellow, 4 : light blue
+    STATE_WAITING_FOR_JOIN = 1          # reply for ClientRequest.CHECK_STATE
+    STATE_WAITING_FOR_GUESS = 2         # reply for ClientRequest.CHECK_STATE
+    GAME_FULL = 3                       # reply for ClientRequest.JOIN_GAME
+    GAME_OVER = 4                       # reply for ClientRequest.CHECK_STATE
+    NOT_YOUR_TURN = 5                   # reply for ClientRequest.CHECK_STATE
+    PLAYER_ALREADY_EXISTS = 7           # reply for ClientRequest.JOIN_GAME
+    WAITING_FOR_SECOND_PLAYER = 8       # reply for ClientRequest.JOIN_GAME
+    GAME_STARTED_YOUR_TURN = 9          # reply for ClientRequest.JOIN_GAME
+    GAME_STARTED_WAIT_FOR_TURN = 10     # reply for ClientReuqest.JOIN_GAME
+    GUESS_RESULT = 11                   # reply for ClientRequest.SEND_GUESS
+    YOU_WON = 12                        # reply for ClientRequest.SEND_GUESS
 
 
 class Player:
     def __init__(self, name):
         self.player_name = name
         self.num_of_guesses = 0
-        # self.board = choices(GameColors.ALLOWED_COLORS.value, k=4)  # choose 4 colors, can repeat
         self.board = int(str(randrange(3) + 1) + str(randrange(3) + 1) + str(randrange(3) + 1) + str(randrange(3) + 1))
         # todo save last state?
         # todo save last guesses and results?
@@ -49,9 +39,6 @@ class Player:
     def __repr__(self):  # todo board representation with color
         player_str = " Player name: " + self.player_name + ", Board: " + self.board.__repr__()
         return player_str
-
-    def get_board_numbers(self):
-        return [x.value for x in self.board]
 
 
 class Game:

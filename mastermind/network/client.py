@@ -20,7 +20,7 @@ def get_guess(self, name):
     print("-- Player " + str(self.next_turn)) + ": Please enter your guess in four digits."
     print("(1 : light red, 2 : light green, 3 : light yellow, 4 : light blue)")
     guess = input("...")
-    return guess    # todo check guess
+    return guess  # todo check guess
 
 
 def clean_exit():
@@ -73,13 +73,6 @@ if __name__ == "__main__":
                         clean_exit()
 
                     new_op = get_op_new_request(reply)
-                    # asking for a guess only when needed
-                    if new_op == ClientRequest.SEND_GUESS:
-                        # show player guess results
-                        guess = get_guess(user)
-                    else:
-                        guess = ""
-
                     # check for a win or lost situation
                     if new_op == ClientRequest.WON_GAME:
                         # do some nice printing
@@ -88,10 +81,20 @@ if __name__ == "__main__":
                         # do some nice printing
                         clean_exit()
 
+                    # asking for a guess only when needed
+                    if new_op == ClientRequest.SEND_GUESS:
+                        # show player guess results, if there are any
+                        if 'full_corrects' in reply:
+                            logging.info("Your guess contains " + reply.get('full_corrects') + " full corrects and " +
+                                         reply.get('half_corrects') + " half corrects.")
+                        guess = get_guess(user)
+                    else:
+                        guess = ""
+
                     # generating a new request
                     request = {"op": new_op,
-                                "user": user,
-                                "guess": guess}
+                               "user": user,
+                               "guess": guess}
                 else:
                     logging.error("no reply received")
                     retries_left -= 1
