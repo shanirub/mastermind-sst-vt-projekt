@@ -1,5 +1,5 @@
 from mastermind.logic.game_logic_server import ServerReply, ClientRequest
-from mastermind.logic.game_logic_client import get_op_new_request, should_exit, generate_request
+from mastermind.logic.game_logic_client import get_op_new_request, should_exit
 
 
 def test_get_op_new_request():

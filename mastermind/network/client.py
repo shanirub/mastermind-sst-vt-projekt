@@ -6,7 +6,7 @@
 import logging
 import sys
 import zmq
-from mastermind.logic.game_logic_client import should_exit, generate_request, get_op_new_request
+from mastermind.logic.game_logic_client import should_exit, get_op_new_request
 from mastermind.logic.game_logic_server import ClientRequest, ServerReply
 
 
