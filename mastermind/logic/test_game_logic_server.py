@@ -13,8 +13,12 @@ def test_add_player():
     assert game.add_player("Ru") == ServerReply.GAME_FULL
 
 
-def test_analyse_guess():
-    assert True
+def test_check_guess():
+    game = Game()
+    game.add_player("Sha")
+    game.add_player("ni")
+
+    assert game.check_guess("Sha", "1111") == (0, 0)
 
 
 def test_check_state():

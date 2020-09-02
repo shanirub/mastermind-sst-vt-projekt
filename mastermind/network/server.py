@@ -2,7 +2,7 @@ import logging
 
 import zmq
 
-from mastermind.logic.game_logic_server import Game, ClientRequest
+from mastermind.logic.game_logic_server import Game, ClientRequest, ServerReply
 
 
 def generate_reply():
@@ -14,7 +14,8 @@ def handle_request(request):
         op = game.add_player(request.get('user'))
         return {'op': op.name}
     elif request.get('op').name == ClientRequest.SEND_GUESS.name:
-        return {"op": "SEND_GUESS request"}     # todo
+        full_c, half_c = game.check_guess(request.get('user'), request.get('guess'))
+        return {"op": ServerReply.GUESS_RESULT, 'full_corrects': full_c, 'half_corrects': half_c}
     elif request.get('op').name == ClientRequest.CHECK_STATE.name:
         op = game.check_state(request.get('user'))
         return {'op': op}
@@ -39,13 +40,10 @@ if __name__ == "__main__":
     try:
         while True:
             request = server.recv_pyobj()
-            logging.info("Received request from: " + request.get('user'))
-            logging.info("Request op code: " + str(request.get('op')))
-            # print("Reply: %s" % reply)
+            logging.info("<-- Received request from: " + request.get('user') + ", request op code: " + str(request.get('op')))
             reply = handle_request(request)
-            logging.info("Reply generated, op code: " + str(reply.get('op')))
             server.send_pyobj(reply)
-            logging.info("Reply send: %s" % str(reply.get('op')))
+            logging.info("--> Reply send: %s" % str(reply.get('op')))
 
     finally:
         server.close()

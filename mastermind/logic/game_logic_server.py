@@ -3,7 +3,7 @@
 
 import logging
 from enum import Enum
-from random import choices, randint
+from random import choices, randint, randrange
 
 from sty import fg, rs
 
@@ -12,6 +12,8 @@ class ClientRequest(Enum):
     JOIN_GAME = 1
     SEND_GUESS = 2
     CHECK_STATE = 3
+    WON_GAME = 4
+    LOST_GAME = 5
 
 
 class ServerReply(Enum):
@@ -25,6 +27,8 @@ class ServerReply(Enum):
     WAITING_FOR_SECOND_PLAYER = 8  #
     GAME_STARTED_YOUR_TURN = 9  #
     GAME_STARTED_WAIT_FOR_TURN = 10  #
+    GUESS_RESULT = 11 #
+    YOU_WON = 12 #
 
 
 class GameColors(Enum):
@@ -37,13 +41,17 @@ class Player:
     def __init__(self, name):
         self.player_name = name
         self.num_of_guesses = 0
-        self.board = choices(GameColors.ALLOWED_COLORS.value, k=4)  # choose 4 colors, can repeat
+        # self.board = choices(GameColors.ALLOWED_COLORS.value, k=4)  # choose 4 colors, can repeat
+        self.board = int(str(randrange(3) + 1) + str(randrange(3) + 1) + str(randrange(3) + 1) + str(randrange(3) + 1))
         # todo save last state?
         # todo save last guesses and results?
 
     def __repr__(self):  # todo board representation with color
         player_str = " Player name: " + self.player_name + ", Board: " + self.board.__repr__()
         return player_str
+
+    def get_board_numbers(self):
+        return [x.value for x in self.board]
 
 
 class Game:
@@ -88,16 +96,13 @@ class Game:
                 else:
                     return ServerReply.GAME_STARTED_WAIT_FOR_TURN
 
-    def analyse_guess(self, request):
-        reply = request  # todo remove
-        return reply
-
     def check_state(self, player_name):
         # local var. to make the ifs clearer
         num_of_players = len(self.players)
         players_names = [x.player_name for x in self.players]
         has_player_joined = player_name in players_names
 
+        # todo add clause when the other player wins
         if num_of_players == 0:
             return ServerReply.STATE_WAITING_FOR_JOIN
         elif num_of_players == 1:
@@ -113,6 +118,19 @@ class Game:
                     return ServerReply.NOT_YOUR_TURN
             else:
                 return ServerReply.GAME_FULL
+
+    def check_guess(self, user, guess):
+        full_corrects = 0  # correct color + place
+        half_corrects = 0  # correct color wrong place (after full corrects removed)
+
+        players_names = [x.player_name for x in self.players]
+        other_player_index = abs(players_names.index(user) - 1) # user 1 -> other player 0
+                                                                # user 0 -> other player 1
+        other_player_board = self.players[other_player_index].board
+
+        # do logic magic
+
+        return full_corrects, half_corrects
 
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)

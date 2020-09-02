@@ -75,9 +75,18 @@ if __name__ == "__main__":
                     new_op = get_op_new_request(reply)
                     # asking for a guess only when needed
                     if new_op == ClientRequest.SEND_GUESS:
+                        # show player guess results
                         guess = get_guess(user)
                     else:
                         guess = ""
+
+                    # check for a win or lost situation
+                    if new_op == ClientRequest.WON_GAME:
+                        # do some nice printing
+                        clean_exit()
+                    elif new_op == ClientRequest.LOST_GAME:
+                        # do some nice printing
+                        clean_exit()
 
                     # generating a new request
                     request = {"op": new_op,

@@ -8,6 +8,8 @@ def test_get_op_new_request():
     assert get_op_new_request({'op': ServerReply.STATE_WAITING_FOR_GUESS}) is ClientRequest.SEND_GUESS
     assert get_op_new_request({'op': ServerReply.GAME_STARTED_WAIT_FOR_TURN}) is ClientRequest.CHECK_STATE
     assert get_op_new_request({'op': ServerReply.WAITING_FOR_SECOND_PLAYER}) is ClientRequest.CHECK_STATE
+    assert get_op_new_request({'op': ServerReply.GAME_OVER}) is ClientRequest.LOST_GAME
+    assert get_op_new_request({'op': ServerReply.YOU_WON}) is ClientRequest.WON_GAME
 
 
 def test_should_exit():

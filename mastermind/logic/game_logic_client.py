@@ -27,6 +27,15 @@ def get_op_new_request(reply):
     elif reply.get('op') is ServerReply.STATE_WAITING_FOR_GUESS or reply.get('op') is ServerReply.GAME_STARTED_YOUR_TURN:
         logging.info("your turn to guess")
         return ClientRequest.SEND_GUESS
+    elif reply.get('op') is ServerReply.GUESS_RESULT:
+        logging.info("got result for the guess")
+        return ClientRequest.SEND_GUESS
+    elif reply.get('op') is ServerReply.GAME_OVER:
+        # game lost
+        return ClientRequest.LOST_GAME
+    elif reply.get('op') is ServerReply.YOU_WON:
+        # game won
+        return ClientRequest.WON_GAME
 
 
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
