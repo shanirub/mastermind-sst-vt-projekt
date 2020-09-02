@@ -6,8 +6,21 @@
 import logging
 import sys
 import zmq
-from mastermind.logic.game_logic_client import should_exit, generate_request
+from mastermind.logic.game_logic_client import should_exit, generate_request, get_op_new_request
 from mastermind.logic.game_logic_server import ClientRequest, ServerReply
+
+
+def get_guess(self, name):
+    """
+    Reads a new guess from the player
+    :param self:
+    :param name: player's name to identify him to the server
+    :return: the guess unchecked todo
+    """
+    print("-- Player " + str(self.next_turn)) + ": Please enter your guess in four digits."
+    print("(1 : light red, 2 : light green, 3 : light yellow, 4 : light blue)")
+    guess = input("...")
+    return guess    # todo check guess
 
 
 def clean_exit():
@@ -59,8 +72,17 @@ if __name__ == "__main__":
                     if should_exit(reply):  # 3
                         clean_exit()
 
+                    new_op = get_op_new_request(reply)
+                    # asking for a guess only when needed
+                    if new_op == ClientRequest.SEND_GUESS:
+                        guess = get_guess(user)
+                    else:
+                        guess = ""
+
                     # generating a new request
-                    request = generate_request(user, reply)
+                    request = {"op": new_op,
+                                "user": user,
+                                "guess": guess}
                 else:
                     logging.error("no reply received")
                     retries_left -= 1

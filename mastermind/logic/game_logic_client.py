@@ -29,29 +29,4 @@ def get_op_new_request(reply):
         return ClientRequest.SEND_GUESS
 
 
-def get_guess(self, name):
-    """
-    Reads a new guess from the player
-    :param self:
-    :param name: player's name to identify him to the server
-    :return: the guess unchecked todo
-    """
-    print("-- Player " + str(self.next_turn)) + ": Please enter your guess in four digits."
-    print("(1 : light red, 2 : light green, 3 : light yellow, 4 : light blue)")
-    guess = input("...")
-    return guess    # todo check guess
-
-
-def generate_request(user, reply):
-    new_op = get_op_new_request(reply)
-    # asking for a guess only when needed
-    if new_op == ClientRequest.SEND_GUESS:
-        guess = get_guess(user)
-    else:
-        guess = ""
-    return {"op": new_op,
-            "user": user,
-            "guess": guess}
-
-
 logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)

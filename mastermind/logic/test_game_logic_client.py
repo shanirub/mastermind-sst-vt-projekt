@@ -10,17 +10,6 @@ def test_get_op_new_request():
     assert get_op_new_request({'op': ServerReply.WAITING_FOR_SECOND_PLAYER}) is ClientRequest.CHECK_STATE
 
 
-def test_generate_request():
-    pass
-    #assert generate_request(user,) is {'op': new_op, 'user': user, 'guess': ""}
-
-    #new_op = ClientRequest.SEND_GUESS
-    #assert generate_request(user, new_op) is {'op': new_op, 'user': user, 'guess': "1234"}
-
-    #new_op = ClientRequest.JOIN_GAME
-    #assert generate_request(user, new_op) is {'op': new_op, 'user': user, 'guess': ""}
-
-
 def test_should_exit():
     assert should_exit({'op': ServerReply.GAME_OVER}) is True
     assert should_exit({'op': ServerReply.GAME_FULL}) is True
