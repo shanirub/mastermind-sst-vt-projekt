@@ -25,7 +25,7 @@ def get_op_new_request(reply):
         return ClientRequest.SEND_GUESS
     elif reply.get('op') is ServerReply.GUESS_RESULT:
         logging.info("Got result for the guess")
-        return ClientRequest.SEND_GUESS
+        return ClientRequest.CHECK_STATE
     elif reply.get('op') is ServerReply.GAME_OVER:
         # game lost
         return ClientRequest.LOST_GAME
