@@ -65,6 +65,7 @@ class Game:
             player = Player(player_name)
             self.players.append(player)
             logging.info("Created and added player: " + str(player_name))
+            logging.info("Board: " + str(self.players[0].board))
             return ServerReply.WAITING_FOR_SECOND_PLAYER
 
         if len(self.players) == 1:
@@ -75,7 +76,7 @@ class Game:
                 player = Player(player_name)
                 self.players.append(player)
                 logging.info("Created and added player: " + player_name)
-
+                logging.info("Board: " + str(self.players[1].board))
                 self.next_turn = randint(0, 1)
                 logging.info("Game started. First turn goes to " + self.players[self.next_turn].player_name)
 

@@ -9,6 +9,8 @@ def handle_request(request):
         return {'op': op.name}
     elif request.get('op').name == ClientRequest.SEND_GUESS.name:
         full_c, half_c = game.check_guess(request.get('user'), request.get('guess'))
+        if full_c == 4:
+            return {'op': ServerReply.YOU_WON}
         return {"op": ServerReply.GUESS_RESULT, 'full_corrects': full_c, 'half_corrects': half_c}
     elif request.get('op').name == ClientRequest.CHECK_STATE.name:
         op = game.check_state(request.get('user'))
