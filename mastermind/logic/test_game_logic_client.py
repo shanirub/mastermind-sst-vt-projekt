@@ -10,7 +10,7 @@ def test_get_op_new_request():
     assert get_op_new_request({'op': ServerReply.WAITING_FOR_SECOND_PLAYER}) is ClientRequest.CHECK_STATE
     assert get_op_new_request({'op': ServerReply.GAME_OVER}) is ClientRequest.LOST_GAME
     assert get_op_new_request({'op': ServerReply.YOU_WON}) is ClientRequest.WON_GAME
-    assert get_op_new_request({'op': ServerReply.GUESS_RESULT}) is ClientRequest.SEND_GUESS
+    assert get_op_new_request({'op': ServerReply.GUESS_RESULT}) is ClientRequest.CHECK_STATE
     assert get_op_new_request({'op': ServerReply.STATE_WAITING_FOR_JOIN}) is ClientRequest.CHECK_STATE
     # assert get_op_new_request({'op': ServerReply.PLAYER_ALREADY_EXISTS}) is ClientRequest.LOST_GAME # should not happen
     # assert get_op_new_request({'op': ServerReply.GAME_FULL}) is ClientRequest.LOST_GAME # should not happen
