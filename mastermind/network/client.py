@@ -75,10 +75,19 @@ if __name__ == "__main__":
                     if should_exit(reply):  # 3
                         clean_exit()
 
+                    if reply.get('op') == ServerReply.GUESS_RESULT:
+                        # show player guess results, if there are any
+                        if 'full_corrects' in reply:
+                            logging.info(
+                                "Your guess contains " + str(reply.get('full_corrects')) + " full corrects and " +
+                                str(reply.get('half_corrects')) + " half corrects.")
+
                     new_op = get_op_new_request(reply)
+                    if new_op == ClientRequest.CHECK_STATE:
+                        sleep(5)
                     # check for a win or lost situation
                     if new_op == ClientRequest.WON_GAME:
-                        # do some nice printing
+                        logging.info("you won hurra")
                         clean_exit()
                     elif new_op == ClientRequest.LOST_GAME:
                         # do some nice printing
@@ -86,10 +95,6 @@ if __name__ == "__main__":
 
                     # asking for a guess only when needed
                     if new_op == ClientRequest.SEND_GUESS:
-                        # show player guess results, if there are any
-                        if 'full_corrects' in reply:
-                            logging.info("Your guess contains " + str(reply.get('full_corrects')) + " full corrects and " +
-                                         str(reply.get('half_corrects')) + " half corrects.")
                         guess = get_guess(user)
                     else:
                         guess = ""
