@@ -128,6 +128,12 @@ class Game:
                 full_corrects += 1
                 half_corrects -= 1
 
+        # changing turns
+        if self.next_turn == 1:
+            self.next_turn = 0
+        else:
+            self.next_turn = 1
+
         return full_corrects, half_corrects
 
 
