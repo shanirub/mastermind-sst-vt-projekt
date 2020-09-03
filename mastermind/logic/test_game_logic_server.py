@@ -13,8 +13,16 @@ def test_add_player():
     assert game.add_player("Ru") == ServerReply.GAME_FULL
 
 
-def test_analyse_guess():
-    assert True
+def test_check_guess():
+    game = Game()
+    game.add_player("Sha")
+    game.add_player("ni")
+    game.players[1].board = 1234    # ni board set to 1234 for testing
+    assert game.check_guess("Sha", "1111") == (1, 0)
+    assert game.check_guess("Sha", "1212") == (2, 0)
+    assert game.check_guess("Sha", "4321") == (0, 4)
+    assert game.check_guess("Sha", "1234") == (4, 0)
+    assert game.check_guess("Sha", "1324") == (2, 2)
 
 
 def test_check_state():
@@ -30,4 +38,3 @@ def test_check_state():
     assert game.check_state("Sha") == ServerReply.NOT_YOUR_TURN
     assert game.check_state("Ni") == ServerReply.STATE_WAITING_FOR_GUESS
     assert game.check_state("Ru") == ServerReply.GAME_FULL
-
