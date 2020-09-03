@@ -5,19 +5,20 @@
 #
 import logging
 import sys
+from time import sleep
+
 import zmq
 from mastermind.logic.game_logic_client import should_exit, get_op_new_request
 from mastermind.logic.game_logic_server import ClientRequest, ServerReply
 
 
-def get_guess(self, name):
+def get_guess(name):
     """
     Reads a new guess from the player
-    :param self:
     :param name: player's name to identify him to the server
     :return: the guess unchecked todo
     """
-    print("-- Player " + str(self.next_turn)) + ": Please enter your guess in four digits."
+    print("-- Player " + name + ": Please enter your guess in four digits.")
     print("(1 : light red, 2 : light green, 3 : light yellow, 4 : light blue)")
     guess = input("...")
     return guess  # todo check guess
@@ -51,21 +52,23 @@ if __name__ == "__main__":
     request = {'op': ClientRequest.JOIN_GAME,
                'user': user,
                'guess': ""}
-    logging.info("Request generated")
     client.send_pyobj(request)
+    logging.info("--> Request sent")
 
     try:
         retries_left = REQUEST_RETRIES
-        logging.info("zmq.POLLIN == " + str(zmq.POLLIN))
-        logging.info("client.poll(REQUEST_TIMEOUT) == " + str(client.poll(REQUEST_TIMEOUT)))
+        # logging.info("zmq.POLLIN == " + str(zmq.POLLIN))
+        # logging.info("client.poll(REQUEST_TIMEOUT) == " + str(client.poll(REQUEST_TIMEOUT)))
 
         while True:
+            sleep(1)
             # is there a reply waiting?
+            logging.info("waiting for reply")
             if (client.poll(REQUEST_TIMEOUT) & zmq.POLLIN) != 0:
                 reply = client.recv_pyobj()
                 # does the reply have a content?
                 if reply is not None:
-                    logging.info("received reply" + reply.get('op'))
+                    logging.info("<-- Received reply " + str(reply.get('op')))
                     retries_left = REQUEST_RETRIES
 
                     # checking to see if need to exit
@@ -85,8 +88,8 @@ if __name__ == "__main__":
                     if new_op == ClientRequest.SEND_GUESS:
                         # show player guess results, if there are any
                         if 'full_corrects' in reply:
-                            logging.info("Your guess contains " + reply.get('full_corrects') + " full corrects and " +
-                                         reply.get('half_corrects') + " half corrects.")
+                            logging.info("Your guess contains " + str(reply.get('full_corrects')) + " full corrects and " +
+                                         str(reply.get('half_corrects')) + " half corrects.")
                         guess = get_guess(user)
                     else:
                         guess = ""
@@ -96,9 +99,9 @@ if __name__ == "__main__":
                                "user": user,
                                "guess": guess}
                 else:
-                    logging.error("no reply received")
+                    logging.error("!-- No reply received")
                     retries_left -= 1
-                    logging.warning("No response from server")
+                    logging.warning("!-- No response from server")
                     # Socket is confused. Close and remove it.
                     client.setsockopt(client.LINGER, 0)
                     client.close()
@@ -112,9 +115,9 @@ if __name__ == "__main__":
                 break
 
             if retries_left < REQUEST_RETRIES:
-                logging.info("Resending (%s)", request)
+                logging.info("--> Resending (%s)", request)
             else:
-                logging.info("Sending (%s)", request)
+                logging.info("--> Sending (%s)", request)
 
             # sending a request (rerequest or new request)
             client.send_pyobj(request)
