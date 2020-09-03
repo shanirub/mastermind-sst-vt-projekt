@@ -5,8 +5,8 @@ from mastermind.logic.game_logic_server import Game, ClientRequest, ServerReply
 
 def handle_request(request):
     if request.get('op').name == ClientRequest.JOIN_GAME.name:
-        op = game.add_player(request.get('user'))
-        return {'op': op.name}
+        op, board = game.add_player(request.get('user'))
+        return {'op': op, 'board': board}
     elif request.get('op').name == ClientRequest.SEND_GUESS.name:
         full_c, half_c = game.check_guess(request.get('user'), request.get('guess'))
         if full_c == 4:

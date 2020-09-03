@@ -75,6 +75,10 @@ if __name__ == "__main__":
                     if should_exit(reply):  # 3
                         clean_exit()
 
+                    # checking to see if player got his board
+                    if 'board' in reply:
+                        print("Your board is: " + reply.get('board'))
+                    # checking to see if player got results for his guess
                     if reply.get('op') == ServerReply.GUESS_RESULT:
                         # show player guess results, if there are any
                         if 'full_corrects' in reply:

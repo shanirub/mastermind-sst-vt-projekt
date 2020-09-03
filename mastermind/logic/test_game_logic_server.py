@@ -3,14 +3,26 @@ from mastermind.logic.game_logic_server import Game, ServerReply
 
 def test_add_player():
     game = Game()
+
     # adding first player
-    assert game.add_player("Sha") == ServerReply.WAITING_FOR_SECOND_PLAYER
+    reply = game.add_player("Sha")
+    assert reply.get('op') == ServerReply.WAITING_FOR_SECOND_PLAYER
+    assert reply.get('board').isdigit() is True
+
     # first player cannot be added twice
-    assert game.add_player("Sha") == ServerReply.PLAYER_ALREADY_EXISTS
+    reply = game.add_player("Sha")
+    assert reply.get('op') == ServerReply.PLAYER_ALREADY_EXISTS
+    assert reply.get('board').isdigit() is False
+
     # second player added
-    assert game.add_player("ni") == ServerReply.GAME_STARTED_YOUR_TURN or ServerReply.GAME_STARTED_WAIT_FOR_TURN
+    reply = game.add_player("ni")
+    assert reply.get('op') == ServerReply.GAME_STARTED_YOUR_TURN or ServerReply.GAME_STARTED_WAIT_FOR_TURN
+    assert reply.get('board').isdigit() is True
+
     # trying to add a third player
-    assert game.add_player("Ru") == ServerReply.GAME_FULL
+    reply = game.add_player("Ru")
+    assert reply.get('op') == ServerReply.GAME_FULL
+    assert reply.get('board').isdigit() is False
 
 
 def test_check_guess():
