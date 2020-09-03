@@ -1,12 +1,6 @@
 import logging
-
 import zmq
-
 from mastermind.logic.game_logic_server import Game, ClientRequest, ServerReply
-
-
-def generate_reply():
-    pass
 
 
 def handle_request(request):
@@ -20,7 +14,7 @@ def handle_request(request):
         op = game.check_state(request.get('user'))
         return {'op': op}
     else:
-        return {"op": "nothing done"}           # todo
+        return {"op": "nothing done"}  # todo
 
 
 if __name__ == "__main__":
@@ -40,7 +34,8 @@ if __name__ == "__main__":
     try:
         while True:
             request = server.recv_pyobj()
-            logging.info("<-- Received request from: " + request.get('user') + ", request op code: " + str(request.get('op')))
+            logging.info(
+                "<-- Received request from: " + request.get('user') + ", request op code: " + str(request.get('op')))
             reply = handle_request(request)
             server.send_pyobj(reply)
             logging.info("--> Reply send: %s" % str(reply.get('op')))
@@ -48,41 +43,3 @@ if __name__ == "__main__":
     finally:
         server.close()
         context.term()
-
-
-
-#
-#  Lazy Pirate server
-#  Binds REQ socket to tcp://*:5555
-#  Like hwserver except:
-#   - echoes request as-is
-#   - randomly runs slowly, or exits to simulate a crash.
-#
-#   Author: Daniel Lundin <dln(at)eintr(dot)org>
-#
-# from random import randint
-# import itertools
-# import logging
-# import time
-# import zmq
-#
-# logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
-#
-# context = zmq.Context()
-# server = context.socket(zmq.REP)
-# server.bind("tcp://*:5555")
-#
-# for cycles in itertools.count():
-#     request = server.recv()
-#
-#     # Simulate various problems, after a few cycles
-#     if cycles > 3 and randint(0, 3) == 0:
-#         logging.info("Simulating a crash")
-#         break
-#     elif cycles > 3 and randint(0, 3) == 0:
-#         logging.info("Simulating CPU overload")
-#         time.sleep(2)
-#
-#     logging.info("Normal request (%s)", request)
-#     time.sleep(1)  # Do some heavy work
-#     server.send(request)

@@ -28,4 +28,3 @@ def test_should_exit():
     assert should_exit({'op': ServerReply.GUESS_RESULT}) is False
     assert should_exit({'op': ServerReply.YOU_WON}) is False
     assert should_exit({'op': ServerReply.STATE_WAITING_FOR_JOIN}) is False
-
