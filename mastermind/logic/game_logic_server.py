@@ -32,6 +32,7 @@ class Player:
     def __init__(self, name):
         self.player_name = name
         self.num_of_guesses = 0
+        self.has_lost = False
         # board: 4 digits of 1-4
         self.board = int(str(randrange(3) + 1) + str(randrange(3) + 1) + str(randrange(3) + 1) + str(randrange(3) + 1))
         # todo save last state?
@@ -108,7 +109,10 @@ class Game:
         elif num_of_players == 2:
             if has_player_joined:
                 if self.next_turn == players_names.index(player_name):
-                    return ServerReply.STATE_WAITING_FOR_GUESS
+                    if self.players[players_names.index(player_name)].has_lost is True:
+                        return ServerReply.GAME_OVER
+                    else:
+                        return ServerReply.STATE_WAITING_FOR_GUESS
                 else:
                     return ServerReply.NOT_YOUR_TURN
             else:
@@ -140,6 +144,9 @@ class Game:
             self.next_turn = 0
         else:
             self.next_turn = 1
+
+        if full_corrects == 4:  # if player won, we should signal the second player he lost
+            self.players[other_player_index].has_lost = True
 
         return full_corrects, half_corrects
 

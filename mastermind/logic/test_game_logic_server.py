@@ -50,3 +50,7 @@ def test_check_state():
     assert game.check_state("Sha") == ServerReply.NOT_YOUR_TURN
     assert game.check_state("Ni") == ServerReply.STATE_WAITING_FOR_GUESS
     assert game.check_state("Ru") == ServerReply.GAME_FULL
+
+    game.next_turn = 0
+    game.players[0].has_lost = True
+    assert game.check_state("Sha") == ServerReply.GAME_OVER
