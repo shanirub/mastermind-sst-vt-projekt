@@ -91,10 +91,10 @@ if __name__ == "__main__":
                         sleep(5)
                     # check for a win or lost situation
                     if new_op == ClientRequest.WON_GAME:
-                        logging.info("you won hurra")
+                        logging.info("You won, hurra")
                         clean_exit()
                     elif new_op == ClientRequest.LOST_GAME:
-                        # do some nice printing
+                        logging.info("You lost, too bad.")
                         clean_exit()
 
                     # asking for a guess only when needed
