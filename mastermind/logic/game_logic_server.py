@@ -56,34 +56,40 @@ class Game:
                     ServerReply.GAME_STARTED_YOUR_TURN          player added:       and can begin
                     ServerReply.GAME_STARTED_WAIT_FOR_TURN      player added:       and must wait for his turn
         """
+        op = ""
+        board = "empty_board"
 
         if len(self.players) == 2:
             logging.error("There are already two players in the game. Cannot add another one.")
-            return ServerReply.GAME_FULL
+            op = ServerReply.GAME_FULL
 
-        if len(self.players) == 0:
+        elif len(self.players) == 0:
             player = Player(player_name)
             self.players.append(player)
             logging.info("Created and added player: " + str(player_name))
             logging.info("Board: " + str(self.players[0].board))
-            return ServerReply.WAITING_FOR_SECOND_PLAYER
+            op = ServerReply.WAITING_FOR_SECOND_PLAYER
+            board = str(self.players[0].board)
 
-        if len(self.players) == 1:
+        elif len(self.players) == 1:
             if player_name == self.players[0].player_name:
                 logging.error("Player " + player_name + " already listed in game. Cannot add him again.")
-                return ServerReply.PLAYER_ALREADY_EXISTS
+                op = ServerReply.PLAYER_ALREADY_EXISTS
             else:
                 player = Player(player_name)
                 self.players.append(player)
                 logging.info("Created and added player: " + player_name)
                 logging.info("Board: " + str(self.players[1].board))
+                board = str(self.players[1].board)
                 self.next_turn = randint(0, 1)
                 logging.info("Game started. First turn goes to " + self.players[self.next_turn].player_name)
 
                 if player_name == self.players[self.next_turn].player_name:
-                    return ServerReply.GAME_STARTED_YOUR_TURN
+                    op = ServerReply.GAME_STARTED_YOUR_TURN
                 else:
-                    return ServerReply.GAME_STARTED_WAIT_FOR_TURN
+                    op = ServerReply.GAME_STARTED_WAIT_FOR_TURN
+
+        return {'op': op, 'board': board}
 
     def check_state(self, player_name):
         # local var. to make the ifs clearer
