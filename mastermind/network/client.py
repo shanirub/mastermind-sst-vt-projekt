@@ -19,22 +19,24 @@ def get_guess(name):
     :return: the guess unchecked todo
     """
     print("-- Player " + name + ": Please enter your guess in four digits.")
-    print("(1 : light red, 2 : light green, 3 : light yellow, 4 : light blue)")
+    print("(Allowed digits in guess: 1, 2, 3, 4)")
     guess = input("...")
     return guess  # todo check guess
 
 
 def clean_exit():
     logging.info("preforming clean exit")
+    print("Exiting. Goodbye")
     client.close()
     context.term()
     sys.exit()
 
 
 if __name__ == "__main__":
+    print('Welcome to Mastermind.')
     user = input("enter username: ")
 
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.CRITICAL)
     REQUEST_TIMEOUT = 2500
     REQUEST_RETRIES = 3
     SERVER_ENDPOINT = "tcp://localhost:5557"
@@ -85,6 +87,8 @@ if __name__ == "__main__":
                             logging.info(
                                 "Your guess contains " + str(reply.get('full_corrects')) + " full corrects and " +
                                 str(reply.get('half_corrects')) + " half corrects.")
+                            print("Your guess contains " + str(reply.get('full_corrects')) + " full corrects and " +
+                                  str(reply.get('half_corrects')) + " half corrects.")
 
                     new_op = get_op_new_request(reply)
                     if new_op == ClientRequest.CHECK_STATE:
@@ -92,9 +96,11 @@ if __name__ == "__main__":
                     # check for a win or lost situation
                     if new_op == ClientRequest.WON_GAME:
                         logging.info("You won, hurra")
+                        print("You won! Hurra")
                         clean_exit()
                     elif new_op == ClientRequest.LOST_GAME:
                         logging.info("You lost, too bad.")
+                        print("You lost! Too bad")
                         clean_exit()
 
                     # asking for a guess only when needed
@@ -121,6 +127,7 @@ if __name__ == "__main__":
             # after REQUEST_RETRIES tries, we assume the server is down
             if retries_left == 0:
                 logging.error("Server seems to be offline, abandoning")
+                print("Server seems to be offline, abandoning")
                 break
 
             if retries_left < REQUEST_RETRIES:

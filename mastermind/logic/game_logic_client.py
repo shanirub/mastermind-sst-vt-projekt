@@ -18,7 +18,7 @@ def should_exit(reply):
 
 def get_op_new_request(reply):
     if reply.get('op') is ServerReply.NOT_YOUR_TURN or reply.get('op') is ServerReply.GAME_STARTED_WAIT_FOR_TURN or reply.get('op') is ServerReply.WAITING_FOR_SECOND_PLAYER:
-        logging.warning("Not your turn")
+        logging.warning("Please wait for your turn...")
         return ClientRequest.CHECK_STATE
     elif reply.get('op') is ServerReply.STATE_WAITING_FOR_GUESS or reply.get('op') is ServerReply.GAME_STARTED_YOUR_TURN:
         logging.info("Your turn to guess")
@@ -35,4 +35,4 @@ def get_op_new_request(reply):
     return ClientRequest.CHECK_STATE  # todo not very nice, should be in if? fallback
 
 
-logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.WARNING)

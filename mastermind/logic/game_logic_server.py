@@ -67,8 +67,8 @@ class Game:
         elif len(self.players) == 0:
             player = Player(player_name)
             self.players.append(player)
-            logging.info("Created and added player: " + str(player_name))
-            logging.info("Board: " + str(self.players[0].board))
+            logging.warning("Created and added player: " + str(player_name))
+            logging.warning("Board: " + str(self.players[0].board))
             op = ServerReply.WAITING_FOR_SECOND_PLAYER
             board = str(self.players[0].board)
 
@@ -79,11 +79,11 @@ class Game:
             else:
                 player = Player(player_name)
                 self.players.append(player)
-                logging.info("Created and added player: " + player_name)
-                logging.info("Board: " + str(self.players[1].board))
+                logging.warning("Created and added player: " + player_name)
+                logging.warning("Board: " + str(self.players[1].board))
                 board = str(self.players[1].board)
                 self.next_turn = randint(0, 1)
-                logging.info("Game started. First turn goes to " + self.players[self.next_turn].player_name)
+                logging.warning("Game started. First turn goes to " + self.players[self.next_turn].player_name)
 
                 if player_name == self.players[self.next_turn].player_name:
                     op = ServerReply.GAME_STARTED_YOUR_TURN
@@ -151,4 +151,6 @@ class Game:
         return full_corrects, half_corrects
 
 
-logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.WARNING)
+
+# logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)

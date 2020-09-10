@@ -20,7 +20,7 @@ def handle_request(request):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.INFO)
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.CRITICAL)
 
     game = Game()
     logging.info("created a new Game instance")
@@ -33,6 +33,8 @@ if __name__ == "__main__":
     logging.info("Binding to tcp://*:5557 ...")
     server.bind("tcp://*:5557")
 
+    print("Mastermind: Game server started.")
+
     try:
         while True:
             request = server.recv_pyobj()
@@ -41,7 +43,7 @@ if __name__ == "__main__":
             reply = handle_request(request)
             server.send_pyobj(reply)
             logging.info("--> Reply send: %s" % str(reply.get('op')))
-
+            
     finally:
         server.close()
         context.term()
